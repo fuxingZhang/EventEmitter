@@ -29,7 +29,7 @@ class EventEmitter {
         error.code = 'ERR_UNHANDLED_ERROR';
         error.context = err;
         throw error; // Unhandled 'error' event
-      } 
+      }
       return false;
     }
     const copyListeners = [...listeners]
@@ -130,7 +130,7 @@ class EventEmitter {
 
     // Emit removeListener for all listeners on all events
     if (arguments.length === 0) {
-      for (const key of Object.Keys(events)) {
+      for (const key of Reflect.ownKeys(events)) {
         if (key === 'removeListener') continue;
         this.removeAllListeners(key);
       }
@@ -228,7 +228,4 @@ Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
   },
 });
 
-
-
 module.exports = EventEmitter;
-

@@ -1,8 +1,13 @@
 const EventEmitter = require('events');
 
 const myEE = new EventEmitter();
-myEE.once('foo', () => console.log('a'));
-myEE.once('foo', () => console.log('c'));
-myEE.prependOnceListener('foo', () => console.log('b'));
-myEE.emit('foo');
-myEE.emit('foo');
+const sym = Symbol('symbol');
+
+const fn = () => { }
+myEE.on('removeListener', (...args) => {
+  console.log(args, args[0] === sym, args[1] === fn)
+  console.log('removeListener')
+});
+
+myEE.on(sym, fn);
+myEE.removeAllListeners()
