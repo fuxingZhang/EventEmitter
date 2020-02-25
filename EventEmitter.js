@@ -1,7 +1,7 @@
 'use strict';
-const util = require("util");
 const onceWrap = require('./onceWrap');
 const checkListener = require('./checkListener');
+const { ERR_UNHANDLED_ERROR } = require('./errors');
 
 class EventEmitter {
   constructor() {
@@ -18,17 +18,13 @@ class EventEmitter {
     const listeners = this._events[eventName];
     if (listeners === undefined) {
       if (eventName === 'error') {
-        const err = args[0];
-        if (err instanceof Error) {
-          throw err;
-        }
-        // const message = util.formatWithOptions({ colors: false }, `Unhandled error. (%O)`, err);
-        const message = util.format(`Unhandled error. (%O)`, err);
-        const error = new Error(message);
-        error.name = 'Error [ERR_UNHANDLED_ERROR]';
-        error.code = 'ERR_UNHANDLED_ERROR';
-        error.context = err;
-        throw error; // Unhandled 'error' event
+        const error = args[0];
+        
+        if (error instanceof Error) throw error;
+
+        const err = new ERR_UNHANDLED_ERROR(error);
+
+        throw err; // Unhandled 'error' event
       }
       return false;
     }
