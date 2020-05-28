@@ -1,19 +1,9 @@
-class OnceWrap {
-  constructor(target, eventName, listener) {
-    this.fired = false;
-    this.wrapFn = this.onceWrapper.bind(this);
-    this.target = target;
-    this.eventName = eventName;
-    this.listener = listener;
+function onceWrapper() {
+  this.target.removeListener(this.type, this.wrapFn);
+  if (arguments.length === 0) {
+    return this.listener.call(this.target);
   }
-
-  onceWrapper() {
-    if (this.fired) return;
-    this.target.removeListener(this.eventName, this.wrapFn);
-    this.fired = true;
-    if (arguments.length === 0) return this.listener.call(this.target);
-    return this.listener.apply(this.target, arguments);
-  }
+  return this.listener.apply(this.target, arguments);
 }
 
 /**
@@ -21,8 +11,12 @@ class OnceWrap {
  * @param {String} eventName 
  * @param {Function} listener 
  */
-function onceWrap(target, eventName, listener) {
-  return new OnceWrap(target, eventName, listener).wrapFn;
+function onceWrap(target, type, listener) {
+  const state = { wrapFn: undefined, target, type, listener };
+  const wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
 }
 
 module.exports = onceWrap;

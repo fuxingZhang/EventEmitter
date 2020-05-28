@@ -19,7 +19,7 @@ class EventEmitter {
     if (listeners === undefined) {
       if (eventName === 'error') {
         const error = args[0];
-        
+
         if (error instanceof Error) throw error;
 
         const err = new ERR_UNHANDLED_ERROR(error);
@@ -37,9 +37,9 @@ class EventEmitter {
   }
 
   setMaxListeners(n) {
-    if (typeof n !== 'number' || n < 0 || isNaN(n)) {
+    if (!Number.isInteger(n) || n < 0) {
       throw new RangeError(
-        'The value of "n" is out of range. It must be a non-negative number. Received ' +
+        'The value of "n" is out of range. It must be a non-negative integer. Received ' +
         n +
         '.'
       );
@@ -154,16 +154,10 @@ class EventEmitter {
 
     const list = events[eventName];
     if (list === undefined) return this;
-
-    let index = -1;
-    for (let i = list.length - 1; i >= 0; i--) {
-      if (list[i] === listener) {
-        index = i;
-        break;
-      }
-    }
-
-    if (index < 0) return this;
+    const index = list.findIndex(item => {
+      return item === listener || item.listener === listener
+    });
+    if (index === -1) return this;
 
     if (index === 0) {
       list.shift();
@@ -209,18 +203,18 @@ Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
   get() {
     return defaultMaxListeners;
   },
-  set(arg) {
-    if (typeof arg !== 'number' || arg < 0 || isNaN(arg)) {
+  set(n) {
+    if (!Number.isInteger(n) || n < 0) {
       const error = new RangeError(
-        'The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' +
-        arg +
+        'The value of "defaultMaxListeners" is out of range. It must be a non-negative integer. Received ' +
+        n +
         '.'
       );
       error.name = 'RangeError [ERR_OUT_OF_RANGE]'
       error.code = 'ERR_OUT_OF_RANGE'
       throw error
     }
-    defaultMaxListeners = arg;
+    defaultMaxListeners = n;
   },
 });
 
