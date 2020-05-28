@@ -1,8 +1,5 @@
 function onceWrapper() {
   this.target.removeListener(this.type, this.wrapFn);
-  if (arguments.length === 0) {
-    return this.listener.call(this.target);
-  }
   return this.listener.apply(this.target, arguments);
 }
 
