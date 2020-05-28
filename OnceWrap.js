@@ -1,5 +1,5 @@
 function onceWrapper() {
-  this.target.removeListener(this.type, this.wrapFn);
+  this.target.removeListener(this.eventName, this.wrapFn);
   return this.listener.apply(this.target, arguments);
 }
 
@@ -8,11 +8,11 @@ function onceWrapper() {
  * @param {String} eventName 
  * @param {Function} listener 
  */
-function onceWrap(target, type, listener) {
-  const state = { wrapFn: undefined, target, type, listener };
-  const wrapped = onceWrapper.bind(state);
+function onceWrap(target, eventName, listener) {
+  const context = { wrapFn: undefined, target, eventName, listener };
+  const wrapped = onceWrapper.bind(context);
   wrapped.listener = listener;
-  state.wrapFn = wrapped;
+  context.wrapFn = wrapped;
   return wrapped;
 }
 
