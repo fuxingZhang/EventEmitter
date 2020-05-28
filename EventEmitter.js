@@ -159,11 +159,8 @@ class EventEmitter {
     });
     if (index === -1) return this;
 
-    if (index === 0) {
-      list.shift();
-    } else {
-      list.splice(index, 1);
-    }
+    list.splice(index, 1);
+    if(list.length === 0) delete list[eventName];
 
     if (events.removeListener !== undefined) {
       this.emit('removeListener', eventName, listener);
