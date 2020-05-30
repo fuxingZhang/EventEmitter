@@ -1,5 +1,5 @@
 'use strict';
-const onceWrap = require('./onceWrap');
+// const onceWrap = require('./onceWrap');
 const checkListener = require('./checkListener');
 const { ERR_UNHANDLED_ERROR } = require('./errors');
 
@@ -151,7 +151,6 @@ class EventEmitter {
 
     const events = this._events;
     if (events.length === 0) return this;
-
     const list = events[eventName];
     if (list === undefined) return this;
     const index = list.findIndex(item => {
@@ -171,7 +170,14 @@ class EventEmitter {
 
   once(eventName, listener) {
     checkListener(listener);
-    this.on(eventName, onceWrap(this, eventName, listener));
+    // this.on(eventName, onceWrap(this, eventName, listener));
+
+    const wrapper = (...args) => {
+      this.removeListener(eventName, wrapper);
+      listener.apply(this, args);
+    };
+    wrapper.listener = listener;
+    this.on(eventName, wrapper);
     return this;
   }
 
